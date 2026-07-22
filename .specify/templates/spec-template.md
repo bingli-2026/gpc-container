@@ -103,6 +103,27 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
+### Security, Reliability & Operations *(mandatory when affected)*
+
+<!--
+  State the authorization action and resource scope, tenant/ownership rules, audit
+  effects, and workload privilege constraints. For lifecycle or asynchronous work,
+  state idempotency, concurrency, retry, reconciliation, and recovery behavior.
+  For APIs, events, adapters, or data changes, state compatibility and migration
+  requirements. Define the logs, metrics, audit records, and correlation IDs needed
+  to operate the feature.
+-->
+
+- **Authorization**: [Required action, resource scope, and ownership rule, or N/A]
+- **Durability & recovery**: [State transition, idempotency, retry, and recovery rule,
+  or N/A]
+- **Compatibility**: [API/event/adapter/database migration rule, or N/A]
+- **Operational evidence**: [Logs, metrics, audit records, and correlation IDs, or N/A]
+- **Trace and health behavior**: [Trace Context propagation, request correlation,
+  health/readiness effects, or N/A]
+- **Applicability gate**: [MVP, Multi-Tenant, Production, or N/A; resulting controls
+  and evidence]
+
 ## Success Criteria *(mandatory)*
 
 <!--

@@ -40,7 +40,27 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] Bounded context, aggregate ownership, invariants, and transaction boundary are
+      explicit; infrastructure types remain behind adapters.
+- [ ] Authentication, RBAC, ownership/scope checks, workload privilege, and audit
+      effects are specified for every affected operation.
+- [ ] State-changing flows define idempotency, concurrency/generation behavior,
+      durable dispatch, retry, reconciliation, and deletion/recovery behavior.
+- [ ] API, event, adapter, and migration compatibility are documented; any breaking
+      change has an approved migration and rollback plan.
+- [ ] Tests, logs, metrics, audit records, correlation IDs, documentation, and ADRs
+      required by the change are planned with exact paths or deliverables.
+- [ ] Applicable validation commands are listed, must pass before every commit, and
+      commit messages follow Conventional Commits.
+- [ ] Go dependency direction, Next.js BFF boundary, W3C Trace Context, and workload
+      isolation are addressed when the feature affects them.
+- [ ] Production-relevant PostgreSQL migrations document lock/statement timeouts,
+      transaction mode, compatibility window, recovery, and rehearsal requirements.
+- [ ] The applicable MVP, Multi-Tenant, or Production Gate is identified and its
+      required tests, metrics, operational artifacts, and release evidence are planned.
+
+Record every failed check as a justified exception in Complexity Tracking. An
+unrecorded failure blocks implementation.
 
 ## Project Structure
 

@@ -139,7 +139,13 @@ The tasks.md should be immediately executable - each task must be specific enoug
 
 **CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
 
-**Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
+**Tests follow the constitution**: Generate test tasks required by the project
+constitution even when the feature specification does not explicitly request them.
+At minimum, include tests for authorization, state transitions, persistence, external
+contracts, runtime adapters, tenant isolation, migrations, reconciliation, deletion,
+and end-to-end user outcomes when the feature affects those areas. Include applicable
+MVP, Multi-Tenant, or Production Gate work from the constitution. Only unrelated test
+tasks remain optional.
 
 ### Checklist Format (REQUIRED)
 
