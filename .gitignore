@@ -1,0 +1,9 @@
+# Typst generated artifacts
+docs/**/build/
+docs/**/*.pdf
+*.typst-tmp
+
+# Editor and operating-system metadata
+.DS_Store
+.idea/
+.vscode/
