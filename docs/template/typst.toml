@@ -1,0 +1,9 @@
+[package]
+name = "project-kit"
+version = "0.1.0"
+entrypoint = "project-kit.typ"
+authors = ["OpenAI"]
+license = "MIT"
+description = "Chinese professional project-management document kit for Typst"
+keywords = ["project-management", "report", "chinese", "template"]
+compiler = "0.15.0"
