@@ -15,8 +15,8 @@ format-check:
 		fi; \
 	else echo "SKIP format-check (Go): go.mod is not present"; fi; \
 	if [ -f frontend/package.json ]; then \
-		if command -v pnpm >/dev/null 2>&1; then pnpm --dir frontend run format:check; \
-		else echo "SKIP format-check (frontend): pnpm is not installed"; fi; \
+		if command -v bun >/dev/null 2>&1; then bun --cwd frontend run format:check; \
+		else echo "SKIP format-check (frontend): bun is not installed"; fi; \
 	else echo "SKIP format-check (frontend): frontend/package.json is not present"; fi
 
 lint:
@@ -26,8 +26,8 @@ lint:
 		else echo "SKIP lint (Go): go is not installed"; fi; \
 	else echo "SKIP lint (Go): go.mod is not present"; fi; \
 	if [ -f frontend/package.json ]; then \
-		if command -v pnpm >/dev/null 2>&1; then pnpm --dir frontend run lint; \
-		else echo "SKIP lint (frontend): pnpm is not installed"; fi; \
+		if command -v bun >/dev/null 2>&1; then bun --cwd frontend run lint; \
+		else echo "SKIP lint (frontend): bun is not installed"; fi; \
 	else echo "SKIP lint (frontend): frontend/package.json is not present"; fi
 
 test-unit:
@@ -62,8 +62,8 @@ test-e2e:
 		else echo "SKIP test-e2e (Go): go is not installed"; fi; \
 	else echo "SKIP test-e2e (Go): no Go end-to-end test files are present"; fi; \
 	if [ -f frontend/package.json ]; then \
-		if command -v pnpm >/dev/null 2>&1; then pnpm --dir frontend run test:e2e; \
-		else echo "SKIP test-e2e (frontend): pnpm is not installed"; fi; \
+		if command -v bun >/dev/null 2>&1; then bun --cwd frontend run test:e2e; \
+		else echo "SKIP test-e2e (frontend): bun is not installed"; fi; \
 	else echo "SKIP test-e2e (frontend): frontend/package.json is not present"; fi
 
 architecture-check:
