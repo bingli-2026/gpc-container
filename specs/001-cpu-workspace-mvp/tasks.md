@@ -22,7 +22,7 @@ description: "一期昇腾算子远程实训平台的可执行交付任务"
 - [X] T004 [P] Add local development configuration templates without secrets in `.env.example`, `frontend/.env.example`, and `internal/platform/config/config.go`
 - [X] T005 [P] Add deterministic OIDC test identities and controlled dependency fixtures in `tests/fixtures/identity/subjects.json` and `tests/fixtures/runtime/`
 - [X] T006 [P] Create local test orchestration and isolated PostgreSQL/K3s fixture definitions in `deploy/test/compose.yaml` and `deploy/test/k3s/README.md`
-- [ ] T007 [P] Record the approved single-node runtime and persistent-volume decisions in `specs/001-cpu-workspace-mvp/adrs/0001-single-node-kubernetes-runtime.md` and `specs/001-cpu-workspace-mvp/adrs/0002-phase1-ascend-and-persistent-volume.md`
+- [X] T007 [P] Record the approved single-node runtime and persistent-volume decisions in `specs/001-cpu-workspace-mvp/adrs/0001-single-node-kubernetes-runtime.md` and `specs/001-cpu-workspace-mvp/adrs/0002-phase1-ascend-and-persistent-volume.md`
 
 ---
 
