@@ -11,7 +11,7 @@ aggregate 版本/generation、Operation、Audit Record 与 Outbox Event；外部
 | 上下文 | 聚合根 | 内聚不变量 | 对外发布的事实 |
 |---|---|---|---|
 | Identity | User | 外部 subject 一对一映射；邮箱非权威 | `UserIdentityResolved` |
-| Authorization | Role、Permission、RoleBinding | 授权必须具有平台或班级范围 | `RoleBindingChanged` |
+| Authorization | Role、Permission、RoleBinding | 授权必须具有平台或班级范围；Permission action 稳定不可变、可停用或在未被引用时删除 | `RoleBindingChanged` |
 | Class | Class、ClassMembership | 成员/额度/Profile 启用均按班级隔离 | `MembershipChanged`、`ClassQuotaChanged` |
 | Workspace | Workspace、WorkspaceVolume、WorkspaceOperation | 名称唯一、单冲突操作、generation 单调递增 | `WorkspaceOperationRequested`、`WorkspaceObserved` |
 | Task | LongRunningTask、TaskWorkspace、TaskGrant | 任务卷/授权永不复用学生资源 | `TaskOperationRequested`、`TaskGrantChanged` |
@@ -38,6 +38,20 @@ aggregate 版本/generation、Operation、Audit Record 与 Outbox Event；外部
 | LongRunningTask | `id`, `classId`, requester, profile snapshot, state | 仅控制面任务；不表示服务端点。 |
 | TaskWorkspace / TaskGrant | task ID, independent volume, generation, subject/action/status | 与学生工作区分离；授权可撤销且有审计。 |
 | AuditRecord / OutboxEvent | actor/action/target/outcome/correlation; event metadata | 与状态变更同事务持久化；Outbox 可靠分发。 |
+
+## 前端展示模型与加载边界
+
+前端不新增权威领域实体或持久化状态；它只投影 OpenAPI 的 `Class`、`Workspace`、`Operation`、
+`TerminalOperationRecord`、`LongRunningTask` 和 `AuditRecord`。每个展示区块都有 `loading`、`ready`、
+`empty`、`not-disclosed` 和 `error` 状态。Skeleton 是短暂、无语义的视觉状态，不得作为授权、缓存事实
+或操作状态来源；`not-disclosed` 与空态使用相同的非枚举结果页面。
+
+| 展示区块 | 输入读模型 | Skeleton 单位 | 加载时不得显示 |
+|---|---|---|---|
+| 班级 shell / 切换器 | `ClassList`、当前主体 | 选择器和导航项 | 班级名称、数量、成员关系 |
+| 工作区与额度 | `WorkspaceList`、`ProfileList` | 指标卡和工作区卡片行 | 名称、Profile、额度、拥有者 |
+| 详情 / 操作历史 | `Workspace.volume`、`OperationList` | 字段组和历史行 | ID、状态、失败原因、可重试性 |
+| 教学过程 / 任务 / 审计 | 筛选终端记录、`Task`/`TaskGrant`、审计/运营摘要 | 筛选栏和表格行 | 用户、终端内容、任务、审计目标 |
 
 ## 配额与资源不变量
 
@@ -78,6 +92,14 @@ aggregate 版本/generation、Operation、Audit Record 与 Outbox Event；外部
 `LongRunningTask` 使用独立 `TaskWorkspace`、任务卷和 TaskGrant。其创建、取消、恢复、分配与撤销遵循
 同样的 Operation/Outbox/generation 规则；Task Workspace 永不绑定学生 Workspace 或学生 Volume，任务
 终端记录也不进入学生记录范围。
+
+成员移除不是普通状态更新：它必须持久化一个 Operation，并协调进行中的创建、权限撤销和审计结果。
+班级 Profile 启用/停用和额度变更是独立的 ClassProfileEnablement 事实；平台管理员以领域级资源策略
+定义 Profile 的 CPU、内存、存储及（适用时）NPU 槽位限制；`ASCEND_NPU` Profile 必须显式声明正数
+`npuSlots`，CPU Profile 不得因此承担 NPU 槽位要求。普通 Profile 修改/停用不触发外部副作用；
+安全/合规撤销必须以幂等 Operation/Outbox 终止未完成创建并协调清理。培训期资料导出成功后，
+`type=training_period_export` 且 `status=succeeded` 的 Operation 必须返回受控下载结果；每次下载重新
+授权并形成审计，而不返回绕过控制面的存储地址。
 
 ## 迁移与兼容要求
 

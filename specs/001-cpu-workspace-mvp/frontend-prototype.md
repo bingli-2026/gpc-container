@@ -6,6 +6,30 @@
 不直连数据库、运行时或存储，也不以隐藏菜单代替授权。当前信息架构按 DDD 的 Class、Workspace、
 Terminal、Task 和 Audit 读模型组织，权威写入、范围判断和操作状态均来自控制面。
 
+前端设计、断点、受管组件和加载状态以 [前端 UI 契约](contracts/frontend-ui.md) 为准。它不增加或修改
+控制面字段；权限、错误、操作状态和数据归属仍以 OpenAPI 契约为唯一来源。
+
+## 视觉系统与 12 栏响应式布局
+
+- 使用 Tailwind CSS mobile-first class。共享 `AppShell`、`PageContainer` 与 `ResponsiveGrid` 分别拥有
+  导航、最大宽度/边距和 `grid grid-cols-12 gap-4 md:gap-6`；页面禁止复制这些基础布局规则。
+- 手机默认所有主要内容 `col-span-12`，导航收进 Sheet；`sm` 可将概览卡分为 `col-span-6`；`md` 可使用
+  3/9 导航/内容或 6/6 区块；`lg` 允许 3/3/3/3 指标和 8/4 详情操作区；`xl` 允许终端筛选/记录 3/9。
+  宽表必须有窄屏摘要、关键字段优先级或受限 ScrollArea，禁止整页横向滚动。
+- 基础交互使用受管 shadcn/ui（底层 Radix UI）的 Button、Card、Badge、Table、Dialog、AlertDialog、
+  Sheet、Select、Tabs、Tooltip、Form 与 Skeleton。业务组件只组合这些 primitives 并添加领域语义，不得
+  手写焦点陷阱、键盘导航、菜单定位或基础 ARIA 行为。
+- 图标、颜色与文本共同表达状态；危险动作通过 Dialog 明示后果，提交期间锁定重复提交。
+
+## Skeleton 预加载与异步状态
+
+- 每个 route segment 提供 `loading.tsx`，先显示不含班级、用户、工作区数量或权限信息的 shell Skeleton。
+- 班级、工作区/额度、操作历史、终端、任务和审计区块各自通过 `Suspense` 流式完成；fallback 必须保持最终
+  Card、字段组或表格行相同的跨栏与尺寸，避免 CLS。大体积 Client Component 可用动态导入。
+- Skeleton 为装饰性，加载区使用 `aria-busy`；尊重减少动画偏好。`empty`、`not-disclosed`、`error` 和
+  `pending command` 不是 Skeleton：不可枚举错误不显示资源线索；命令 pending 保留已加载内容、禁用重复
+  按钮并展示安全的操作状态/关联 ID。
+
 ## 信息架构
 
 ```text

@@ -113,3 +113,25 @@ class/user/workspace/task scope 分隔；采集缺口也作为运营证据。
 **Alternatives considered**:
 
 - 将多班级仅当作演示而绕过门槛：拒绝，隔离失效会造成真实数据暴露风险。
+
+## 9. 前端设计系统、12 栏响应式网格与加载策略
+
+**Decision**: 前端采用 Next.js App Router、Tailwind CSS v4 和 shadcn/ui（Radix UI primitives）。
+所有页面使用同一 mobile-first `grid-cols-12`，以 `col-span-12` 为窄屏默认，再在 `sm`、`md`、`lg` 和
+`xl` 调整跨栏；共享 `PageContainer` 管理 `max-w-[1536px]`、响应式内边距和 gap。Button、Card、Badge、
+Table、Dialog、AlertDialog、Sheet、Select、Tabs、Tooltip 与 Skeleton 由 shadcn/ui 按需生成并组合；
+业务组件不得重写其键盘、焦点、定位或 ARIA 基础行为。
+
+**Rationale**: 连续的 12 栏能让桌面运营面板保持稳定比例，窄屏只改变跨栏而不复制布局规则；受管组件
+保留可审查的本地源码和 Tailwind 主题，同时避免逐页复制可访问性交互。
+
+**Alternatives considered**:
+
+- 各页面独立 CSS、断点和手写基础控件：拒绝，会造成布局与可访问性漂移。
+- 缩放桌面 12 栏以适配手机：拒绝，文本、表格和危险操作不可用。
+- 只用旋转指示器等待所有数据：拒绝，不能稳定呈现布局，也会阻塞独立内容。
+
+**Loading decision**: route segment 使用 `loading.tsx` 呈现无身份信息的 shell Skeleton；独立读取使用
+Server Component + `Suspense` 分段流式渲染。Skeleton 必须和最终卡片、字段组或表格行的 12 栏跨度与
+尺寸一致；命令提交保留已加载内容、禁用重复提交并显示控制面返回的 operation ID，不能以全页 Skeleton
+或客户端推测替代真实操作状态。
