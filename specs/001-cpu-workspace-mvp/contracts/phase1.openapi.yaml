@@ -1,0 +1,125 @@
+openapi: 3.1.0
+info:
+  title: GPC Container Phase I Control Plane API
+  version: 1.0.0-draft
+  description: >-
+    班级范围的 CPU/Ascend NPU 工作区、终端证据、培训期处置和长期任务控制面契约。
+    受保护资源按稳定主体、权限、班级范围、所有权和任务授权共同判定；无权限目标使用不可枚举响应。
+servers:
+  - url: /v1
+security:
+  - bearerAuth: []
+paths:
+  /me:
+    get: {operationId: getCurrentSubject, summary: 获取稳定主体与有效能力, responses: {'200': {$ref: '#/components/responses/Subject'}}}
+  /classes:
+    get: {operationId: listClasses, summary: 列出当前主体有权访问的班级, responses: {'200': {$ref: '#/components/responses/ClassList'}}}
+    post: {operationId: createClass, summary: 创建班级, parameters: [{$ref: '#/components/parameters/Traceparent'}], requestBody: {$ref: '#/components/requestBodies/ClassCommand'}, responses: {'201': {$ref: '#/components/responses/Class'}, '403': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/members:
+    get: {operationId: listClassMembers, summary: 列出班级成员, parameters: [{$ref: '#/components/parameters/ClassId'}], responses: {'200': {$ref: '#/components/responses/MemberList'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+    put: {operationId: upsertClassMember, summary: 添加或调整班级成员, parameters: [{$ref: '#/components/parameters/ClassId'}, {$ref: '#/components/parameters/Traceparent'}], requestBody: {$ref: '#/components/requestBodies/MemberCommand'}, responses: {'200': {$ref: '#/components/responses/Member'}, '403': {$ref: '#/components/responses/NotDisclosed'}}}
+  /roles:
+    get: {operationId: listRoles, summary: 查询角色定义, responses: {'200': {$ref: '#/components/responses/RoleList'}}}
+    post: {operationId: createRole, summary: 创建角色, requestBody: {$ref: '#/components/requestBodies/RoleCommand'}, responses: {'201': {$ref: '#/components/responses/Role'}}}
+  /roles/{roleId}:
+    patch: {operationId: updateRole, summary: 修改或停用角色, parameters: [{$ref: '#/components/parameters/RoleId'}], requestBody: {$ref: '#/components/requestBodies/RoleCommand'}, responses: {'200': {$ref: '#/components/responses/Role'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+    delete: {operationId: deleteRole, summary: 删除角色定义, parameters: [{$ref: '#/components/parameters/RoleId'}], responses: {'204': {description: 已删除}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /role-bindings:
+    get: {operationId: listRoleBindings, summary: 查询范围角色绑定, responses: {'200': {$ref: '#/components/responses/RoleBindingList'}}}
+    post: {operationId: createRoleBinding, summary: 创建范围角色绑定, requestBody: {$ref: '#/components/requestBodies/RoleBindingCommand'}, responses: {'201': {$ref: '#/components/responses/RoleBinding'}}}
+  /role-bindings/{bindingId}:
+    patch: {operationId: updateRoleBinding, summary: 修改或停用角色绑定, parameters: [{$ref: '#/components/parameters/BindingId'}], requestBody: {$ref: '#/components/requestBodies/RoleBindingCommand'}, responses: {'200': {$ref: '#/components/responses/RoleBinding'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+    delete: {operationId: deleteRoleBinding, summary: 删除角色绑定, parameters: [{$ref: '#/components/parameters/BindingId'}], responses: {'204': {description: 已删除}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/profiles:
+    get: {operationId: listClassProfiles, summary: 列出当前班级可用 CPU/NPU Profile 与额度, parameters: [{$ref: '#/components/parameters/ClassId'}], responses: {'200': {$ref: '#/components/responses/ProfileList'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/workspaces:
+    get: {operationId: listClassWorkspaces, summary: 按授权列出班级工作区, parameters: [{$ref: '#/components/parameters/ClassId'}], responses: {'200': {$ref: '#/components/responses/WorkspaceList'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+    post: {operationId: createWorkspace, summary: 提交工作区创建, parameters: [{$ref: '#/components/parameters/ClassId'}, {$ref: '#/components/parameters/IdempotencyKey'}, {$ref: '#/components/parameters/Traceparent'}], requestBody: {$ref: '#/components/requestBodies/WorkspaceCreate'}, responses: {'202': {$ref: '#/components/responses/AcceptedOperation'}, '409': {$ref: '#/components/responses/Conflict'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/workspaces/{workspaceId}:
+    get: {operationId: getWorkspace, summary: 获取按授权过滤的工作区, parameters: [{$ref: '#/components/parameters/ClassId'}, {$ref: '#/components/parameters/WorkspaceId'}], responses: {'200': {$ref: '#/components/responses/Workspace'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/workspaces/{workspaceId}/commands/{command}:
+    post: {operationId: commandWorkspace, summary: 提交 start/stop/reset/delete 工作区命令, parameters: [{$ref: '#/components/parameters/ClassId'}, {$ref: '#/components/parameters/WorkspaceId'}, {$ref: '#/components/parameters/Command'}, {$ref: '#/components/parameters/IdempotencyKey'}, {$ref: '#/components/parameters/Traceparent'}], requestBody: {$ref: '#/components/requestBodies/WorkspaceCommand'}, responses: {'202': {$ref: '#/components/responses/AcceptedOperation'}, '409': {$ref: '#/components/responses/Conflict'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /operations/{operationId}:
+    get: {operationId: getOperation, summary: 查询稳定操作状态, parameters: [{$ref: '#/components/parameters/OperationId'}], responses: {'200': {$ref: '#/components/responses/Operation'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /operations/{operationId}/retry:
+    post: {operationId: retryOperation, summary: 显式重试可恢复失败操作, parameters: [{$ref: '#/components/parameters/OperationId'}, {$ref: '#/components/parameters/IdempotencyKey'}], responses: {'202': {$ref: '#/components/responses/AcceptedOperation'}, '409': {$ref: '#/components/responses/Conflict'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/terminal-records:
+    get: {operationId: listTerminalRecords, summary: 查询本班已过滤终端记录与采集缺口, parameters: [{$ref: '#/components/parameters/ClassId'}], responses: {'200': {$ref: '#/components/responses/TerminalRecordList'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/training-period/close:
+    post: {operationId: closeTrainingPeriod, summary: 提交停止、保留和限制学生访问的班级处置, parameters: [{$ref: '#/components/parameters/ClassId'}, {$ref: '#/components/parameters/IdempotencyKey'}], responses: {'202': {$ref: '#/components/responses/AcceptedOperation'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/tasks:
+    get: {operationId: listLongRunningTasks, summary: 按任务授权列出长期任务, parameters: [{$ref: '#/components/parameters/ClassId'}], responses: {'200': {$ref: '#/components/responses/TaskList'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+    post: {operationId: submitLongRunningTask, summary: 提交仅由控制面管理的长期任务, parameters: [{$ref: '#/components/parameters/ClassId'}, {$ref: '#/components/parameters/IdempotencyKey'}, {$ref: '#/components/parameters/Traceparent'}], requestBody: {$ref: '#/components/requestBodies/TaskCommand'}, responses: {'202': {$ref: '#/components/responses/AcceptedOperation'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /classes/{classId}/audit-records:
+    get: {operationId: listClassAuditRecords, summary: 查询班级范围审计证据, parameters: [{$ref: '#/components/parameters/ClassId'}], responses: {'200': {$ref: '#/components/responses/AuditList'}, '404': {$ref: '#/components/responses/NotDisclosed'}}}
+  /healthz:
+    get: {security: [], operationId: healthz, summary: 存活检查, responses: {'200': {description: 存活}}}
+  /readyz:
+    get: {security: [], operationId: readyz, summary: 就绪检查, responses: {'200': {description: 就绪}, '503': {description: 未就绪}}}
+components:
+  parameters:
+    ClassId: {name: classId, in: path, required: true, schema: {$ref: '#/components/schemas/Id'}}
+    WorkspaceId: {name: workspaceId, in: path, required: true, schema: {$ref: '#/components/schemas/Id'}}
+    OperationId: {name: operationId, in: path, required: true, schema: {$ref: '#/components/schemas/Id'}}
+    RoleId: {name: roleId, in: path, required: true, schema: {$ref: '#/components/schemas/Id'}}
+    BindingId: {name: bindingId, in: path, required: true, schema: {$ref: '#/components/schemas/Id'}}
+    Command: {name: command, in: path, required: true, schema: {type: string, enum: [start, stop, reset, delete]}}
+    IdempotencyKey: {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 16, maxLength: 128}}
+    Traceparent: {name: traceparent, in: header, required: false, schema: {type: string}}
+  requestBodies:
+    ClassCommand: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/ClassCommand'}}}}
+    MemberCommand: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/MemberCommand'}}}}
+    RoleCommand: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/RoleCommand'}}}}
+    RoleBindingCommand: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/RoleBindingCommand'}}}}
+    WorkspaceCreate: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/WorkspaceCreate'}}}}
+    WorkspaceCommand: {required: false, content: {application/json: {schema: {$ref: '#/components/schemas/WorkspaceCommand'}}}}
+    TaskCommand: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/TaskCommand'}}}}
+  responses:
+    Subject: {description: 当前主体, content: {application/json: {schema: {$ref: '#/components/schemas/Subject'}}}}
+    Class: {description: 班级, content: {application/json: {schema: {$ref: '#/components/schemas/Class'}}}}
+    ClassList: {description: 班级列表, content: {application/json: {schema: {$ref: '#/components/schemas/ClassList'}}}}
+    Member: {description: 成员, content: {application/json: {schema: {$ref: '#/components/schemas/Member'}}}}
+    MemberList: {description: 成员列表, content: {application/json: {schema: {$ref: '#/components/schemas/MemberList'}}}}
+    Role: {description: 角色, content: {application/json: {schema: {$ref: '#/components/schemas/Role'}}}}
+    RoleList: {description: 角色列表, content: {application/json: {schema: {$ref: '#/components/schemas/RoleList'}}}}
+    RoleBinding: {description: 角色绑定, content: {application/json: {schema: {$ref: '#/components/schemas/RoleBinding'}}}}
+    RoleBindingList: {description: 绑定列表, content: {application/json: {schema: {$ref: '#/components/schemas/RoleBindingList'}}}}
+    ProfileList: {description: Profile 与额度, content: {application/json: {schema: {$ref: '#/components/schemas/ProfileList'}}}}
+    Workspace: {description: 工作区, content: {application/json: {schema: {$ref: '#/components/schemas/Workspace'}}}}
+    WorkspaceList: {description: 工作区列表, content: {application/json: {schema: {$ref: '#/components/schemas/WorkspaceList'}}}}
+    Operation: {description: 操作, content: {application/json: {schema: {$ref: '#/components/schemas/Operation'}}}}
+    AcceptedOperation: {description: 已持久受理, headers: {Location: {schema: {type: string}}}, content: {application/json: {schema: {$ref: '#/components/schemas/AcceptedOperation'}}}}
+    TerminalRecordList: {description: 终端记录, content: {application/json: {schema: {$ref: '#/components/schemas/TerminalRecordList'}}}}
+    TaskList: {description: 长期任务列表, content: {application/json: {schema: {$ref: '#/components/schemas/TaskList'}}}}
+    AuditList: {description: 审计列表, content: {application/json: {schema: {$ref: '#/components/schemas/AuditList'}}}}
+    Conflict: {description: 冲突或不可重试, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    NotDisclosed: {description: 不存在或无权限；不得用于枚举, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+  schemas:
+    Id: {type: string, minLength: 1}
+    Subject: {type: object, required: [id, subject], properties: {id: {$ref: '#/components/schemas/Id'}, subject: {type: string}, displayName: {type: string}}}
+    ClassCommand: {type: object, required: [name], properties: {name: {type: string, minLength: 1, maxLength: 120}}}
+    Class: {type: object, required: [id, name, status], properties: {id: {$ref: '#/components/schemas/Id'}, name: {type: string}, status: {type: string}}}
+    ClassList: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/Class'}}}}
+    MemberCommand: {type: object, required: [subjectId], properties: {subjectId: {$ref: '#/components/schemas/Id'}, status: {type: string}}}
+    Member: {type: object, required: [subjectId, status], properties: {subjectId: {$ref: '#/components/schemas/Id'}, status: {type: string}}}
+    MemberList: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/Member'}}}}
+    RoleCommand: {type: object, required: [name, permissionIds], properties: {name: {type: string}, permissionIds: {type: array, items: {$ref: '#/components/schemas/Id'}}, status: {type: string}}}
+    Role: {type: object, required: [id, name, status], properties: {id: {$ref: '#/components/schemas/Id'}, name: {type: string}, status: {type: string}}}
+    RoleList: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/Role'}}}}
+    RoleBindingCommand: {type: object, required: [roleId, subjectId, scopeType, scopeId], properties: {roleId: {$ref: '#/components/schemas/Id'}, subjectId: {$ref: '#/components/schemas/Id'}, scopeType: {type: string, enum: [platform, class]}, scopeId: {$ref: '#/components/schemas/Id'}, status: {type: string}}}
+    RoleBinding: {type: object, required: [id, roleId, subjectId, scopeType], properties: {id: {$ref: '#/components/schemas/Id'}, roleId: {$ref: '#/components/schemas/Id'}, subjectId: {$ref: '#/components/schemas/Id'}, scopeType: {type: string}, scopeId: {$ref: '#/components/schemas/Id'}, status: {type: string}}}
+    RoleBindingList: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/RoleBinding'}}}}
+    ProfileList: {type: object, required: [items], properties: {items: {type: array, items: {type: object, required: [id, computeKind, enabled], properties: {id: {$ref: '#/components/schemas/Id'}, computeKind: {type: string, enum: [CPU, ASCEND_NPU]}, enabled: {type: boolean}, quotaAvailable: {type: boolean}}}}}}
+    WorkspaceCreate: {type: object, required: [name, profileId], properties: {name: {type: string, minLength: 1, maxLength: 80}, profileId: {$ref: '#/components/schemas/Id'}, volumeId: {$ref: '#/components/schemas/Id'}}}
+    WorkspaceCommand: {type: object, properties: {dataDisposition: {type: string, enum: [keep, delete]}}}
+    Workspace: {type: object, required: [id, classId, ownerId, name, state, generation], properties: {id: {$ref: '#/components/schemas/Id'}, classId: {$ref: '#/components/schemas/Id'}, ownerId: {$ref: '#/components/schemas/Id'}, name: {type: string}, state: {type: string}, generation: {type: integer, minimum: 0}, profileId: {$ref: '#/components/schemas/Id'}, volumeId: {$ref: '#/components/schemas/Id'}}}
+    WorkspaceList: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/Workspace'}}}}
+    AcceptedOperation: {type: object, required: [operationId, statusUrl], properties: {operationId: {$ref: '#/components/schemas/Id'}, statusUrl: {type: string}}}
+    Operation: {type: object, required: [id, status, targetId, correlationId], properties: {id: {$ref: '#/components/schemas/Id'}, status: {type: string, enum: [pending, running, succeeded, failed, reconciling]}, targetId: {$ref: '#/components/schemas/Id'}, generation: {type: integer}, retryOfOperationId: {$ref: '#/components/schemas/Id'}, retryable: {type: boolean}, safeFailure: {type: string}, correlationId: {type: string}}}
+    TerminalRecordList: {type: object, required: [items], properties: {items: {type: array, items: {type: object, required: [id, timestamp, direction, filtered], properties: {id: {$ref: '#/components/schemas/Id'}, timestamp: {type: string, format: date-time}, direction: {type: string, enum: [input, stdout, stderr, capture_gap]}, filtered: {type: boolean}, workspaceId: {$ref: '#/components/schemas/Id'}, content: {type: string}}}}}}
+    TaskCommand: {type: object, required: [profileId], properties: {profileId: {$ref: '#/components/schemas/Id'}, inputReference: {type: string, maxLength: 512}}}
+    TaskList: {type: object, required: [items], properties: {items: {type: array, items: {type: object, required: [id, state, workspaceId], properties: {id: {$ref: '#/components/schemas/Id'}, state: {type: string}, workspaceId: {$ref: '#/components/schemas/Id'}}}}}}
+    AuditList: {type: object, required: [items], properties: {items: {type: array, items: {type: object, required: [id, action, outcome, correlationId], properties: {id: {$ref: '#/components/schemas/Id'}, action: {type: string}, outcome: {type: string}, correlationId: {type: string}}}}}}
+    Error: {type: object, required: [code, message, correlationId], properties: {code: {type: string}, message: {type: string}, correlationId: {type: string}}}
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer, bearerFormat: JWT}
