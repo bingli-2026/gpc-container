@@ -1,26 +1,29 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 → 1.2.0
+- Version change: 1.2.0 → 1.3.0
 - Modified principles:
-  - I: expanded with Go dependency direction and bounded-context collaboration rules
-  - II: expanded with workload isolation and Next.js BFF boundaries
-  - III: expanded with durable-operation HTTP response and worker recovery rules
-  - IV: expanded with online PostgreSQL migration safety requirements
-  - V: expanded with Trace Context, observability, and applicability gates
-- Added sections: Purpose; Applicability Gates
+  - Applicability Gates / MVP Gate: expands the approved first delivery from CPU-only
+    to approved CPU and Ascend NPU workspace profiles in a controlled single-node
+    environment; adds NPU device-sharing and isolation evidence.
+  - Mandatory Architecture & Safety Constraints: permits this bounded Ascend NPU
+    capability while retaining the prohibition on arbitrary accelerator scheduling,
+    vNPU/HAMi, and multi-cluster brokering without an approved specification.
+- Added sections: none
 - Removed sections: none
 - Templates requiring updates:
-  - ✅ .specify/templates/plan-template.md
-  - ✅ .specify/templates/spec-template.md
-  - ✅ .specify/templates/tasks-template.md
-  - ✅ .agents/skills/speckit-tasks/SKILL.md
-  - ✅ AGENTS.md
-- Follow-up TODOs: none
+  - ✅ .specify/templates/plan-template.md (generic Constitution Check; no change)
+  - ✅ .specify/templates/spec-template.md (generic scope/requirements; no change)
+  - ✅ .specify/templates/tasks-template.md (generic task categories; no change)
+  - ✅ .agents/skills/speckit-constitution/SKILL.md (generic workflow; no change)
+  - ✅ .agents/skills/speckit-plan/SKILL.md (generic workflow; no change)
+  - ✅ AGENTS.md (generic enforcement rules; no change)
+- Follow-up TODOs: validate the approved Ascend device-share adapter mapping on 8T
+  and 20T hardware before freezing its implementation contract.
 -->
 
 # gpc-container Constitution
 
-**Version**: 1.2.0 | **Ratified**: 2026-07-22 | **Last Amended**: 2026-07-22
+**Version**: 1.3.0 | **Ratified**: 2026-07-22 | **Last Amended**: 2026-07-23
 
 ## Purpose
 
@@ -167,13 +170,17 @@ phase.
 ### MVP Gate
 
 The first single-node delivery MUST include stable internal identity mapping, basic
-RBAC and resource-scope authorization, approved image profiles, non-privileged
-workloads, explicit limits, a workspace state machine, durable operation IDs,
-Outbox-backed execution, generation control, PostgreSQL persistence, a persistent
-volume policy, structured logs, `/healthz`, domain-invariant unit tests,
-persistence/runtime-adapter integration tests, and one complete CPU workspace
-lifecycle. That lifecycle MUST demonstrate authenticated creation, operation progress,
-state inspection, stop, restart, deletion, and expected volume/audit behavior.
+RBAC and resource-scope authorization, approved CPU and Ascend NPU image profiles,
+non-privileged workloads, explicit CPU/memory/storage/device limits, a workspace state
+machine, durable operation IDs, Outbox-backed execution, generation control,
+PostgreSQL persistence, a persistent volume policy, structured logs, `/healthz`,
+domain-invariant unit tests, persistence/runtime-adapter integration tests, and
+complete CPU and Ascend NPU workspace lifecycles. Each lifecycle MUST demonstrate
+authenticated creation, operation progress, state inspection, stop, restart, deletion,
+and expected volume/audit behavior. The Ascend NPU adapter MUST prove device isolation,
+separate class quota accounting, and the approved per-node concurrency limit on the
+target 8T and 20T hardware; it MUST NOT silently downgrade a rejected NPU request to
+CPU.
 
 ### Multi-Tenant Gate
 
@@ -194,9 +201,12 @@ operational runbooks, incident response, and audit-retention documentation.
 
 ## Mandatory Architecture & Safety Constraints
 
-- The first scope is CPU workspace lifecycle management. Accelerator scheduling,
-  image construction, collaborative terminal viewing, public service exposure, and
-  multi-cluster brokering remain out of scope without an approved specification.
+- The first scope is lifecycle management for platform-approved CPU and Ascend NPU
+  workspaces in a controlled single-node environment. Ascend scheduling is limited to
+  the approved device-share adapter, explicit class quotas, and approved per-node
+  concurrency limits. Arbitrary accelerator scheduling, vNPU/HAMi, image construction,
+  collaborative terminal viewing, public service exposure, and multi-cluster brokering
+  remain out of scope without an approved specification.
 - `go.mod` MUST remain at repository root unless an ADR changes module strategy.
   External runtime, database, queue, cache, storage, and vendor clients MUST remain
   outside domain packages. Dependency injection MUST be explicit in composition roots
