@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "workloads": [
+    {
+      "id": "runtime_test_cpu_standard",
+      "profileId": "wsp_test_cpu_standard",
+      "security": {
+        "runAsNonRoot": true,
+        "allowPrivilegeEscalation": false,
+        "privileged": false,
+        "hostNetwork": false,
+        "hostPathMounts": false,
+        "runtimeSocketMount": false
+      }
+    },
+    {
+      "id": "runtime_test_ascend_standard",
+      "profileId": "wsp_test_ascend_standard",
+      "security": {
+        "runAsNonRoot": true,
+        "allowPrivilegeEscalation": false,
+        "privileged": false,
+        "hostNetwork": false,
+        "hostPathMounts": false,
+        "runtimeSocketMount": false
+      }
+    }
+  ]
+}

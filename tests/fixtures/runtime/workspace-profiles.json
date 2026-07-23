@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "id": "wsp_test_cpu_standard",
+      "displayName": "CPU Standard",
+      "computeKind": "CPU",
+      "approvalStatus": "approved",
+      "resourcePolicy": {
+        "cpuMilliCores": 500,
+        "memoryBytes": 1073741824,
+        "storageBytes": 5368709120
+      }
+    },
+    {
+      "id": "wsp_test_ascend_standard",
+      "displayName": "Ascend NPU Standard",
+      "computeKind": "ASCEND_NPU",
+      "approvalStatus": "approved",
+      "resourcePolicy": {
+        "cpuMilliCores": 1000,
+        "memoryBytes": 2147483648,
+        "storageBytes": 10737418240,
+        "npuSlots": 1
+      }
+    }
+  ]
+}

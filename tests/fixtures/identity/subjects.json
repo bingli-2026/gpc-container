@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "classes": [
+    {
+      "id": "cls_test_alpha",
+      "label": "class-alpha"
+    },
+    {
+      "id": "cls_test_beta",
+      "label": "class-beta"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "usr_test_platform_admin",
+      "externalSubject": "oidc-test-platform-admin",
+      "displayName": "Platform Admin",
+      "platformRoles": [
+        "platform_admin"
+      ],
+      "classMemberships": []
+    },
+    {
+      "id": "usr_test_instructor_alpha",
+      "externalSubject": "oidc-test-instructor-alpha",
+      "displayName": "Instructor Alpha",
+      "platformRoles": [],
+      "classMemberships": [
+        {
+          "classId": "cls_test_alpha",
+          "role": "instructor",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "usr_test_student_alpha",
+      "externalSubject": "oidc-test-student-alpha",
+      "displayName": "Student Alpha",
+      "platformRoles": [],
+      "classMemberships": [
+        {
+          "classId": "cls_test_alpha",
+          "role": "student",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "usr_test_student_beta",
+      "externalSubject": "oidc-test-student-beta",
+      "displayName": "Student Beta",
+      "platformRoles": [],
+      "classMemberships": [
+        {
+          "classId": "cls_test_beta",
+          "role": "student",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "usr_test_viewer_alpha",
+      "externalSubject": "oidc-test-viewer-alpha",
+      "displayName": "Viewer Alpha",
+      "platformRoles": [],
+      "classMemberships": [
+        {
+          "classId": "cls_test_alpha",
+          "role": "viewer",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "usr_test_suspended_alpha",
+      "externalSubject": "oidc-test-suspended-alpha",
+      "displayName": "Suspended Alpha",
+      "platformRoles": [],
+      "classMemberships": [
+        {
+          "classId": "cls_test_alpha",
+          "role": "student",
+          "status": "suspended"
+        }
+      ]
+    }
+  ]
+}
