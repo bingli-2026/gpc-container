@@ -19,9 +19,9 @@ description: "一期昇腾算子远程实训平台的可执行交付任务"
 - [X] T001 Initialize Go 1.26.5 module and API/Worker composition roots in `go.mod`, `cmd/api/main.go`, and `cmd/worker/main.go`
 - [X] T002 [P] Initialize Next.js App Router, TypeScript, Bun, Tailwind CSS v4, and shadcn/ui baseline in `frontend/package.json`, `frontend/app/layout.tsx`, and `frontend/components.json`
 - [X] T003 [P] Create repository validation targets in `Makefile` for format, lint, unit, integration, contract, E2E, architecture, and aggregate verification
-- [ ] T004 [P] Add local development configuration templates without secrets in `.env.example`, `frontend/.env.example`, and `internal/platform/config/config.go`
-- [ ] T005 [P] Add deterministic OIDC test identities and controlled dependency fixtures in `tests/fixtures/identity/subjects.json` and `tests/fixtures/runtime/`
-- [ ] T006 [P] Create local test orchestration and isolated PostgreSQL/K3s fixture definitions in `deploy/test/compose.yaml` and `deploy/test/k3s/README.md`
+- [X] T004 [P] Add local development configuration templates without secrets in `.env.example`, `frontend/.env.example`, and `internal/platform/config/config.go`
+- [X] T005 [P] Add deterministic OIDC test identities and controlled dependency fixtures in `tests/fixtures/identity/subjects.json` and `tests/fixtures/runtime/`
+- [X] T006 [P] Create local test orchestration and isolated PostgreSQL/K3s fixture definitions in `deploy/test/compose.yaml` and `deploy/test/k3s/README.md`
 - [ ] T007 [P] Record the approved single-node runtime and persistent-volume decisions in `specs/001-cpu-workspace-mvp/adrs/0001-single-node-kubernetes-runtime.md` and `specs/001-cpu-workspace-mvp/adrs/0002-phase1-ascend-and-persistent-volume.md`
 
 ---
