@@ -1,0 +1,29 @@
+name: gpc-test
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: gpc_test
+      POSTGRES_USER: gpc_test
+      # This is a deliberately non-secret fixture credential. Do not reuse it
+      # outside local or CI test environments.
+      POSTGRES_PASSWORD: gpc_test_password
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - postgres-test-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gpc_test -d gpc_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 2s
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  postgres-test-data:
+    name: gpc-test-postgres-data
+    labels:
+      com.gpc-container.fixture: postgres-test
